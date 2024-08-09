@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include "quantum.h"
+#include "quantum/quantum.h"
 
 using namespace std;
 
@@ -48,8 +48,6 @@ int main() {
         oracle(qubits);
         diffusion(qubits);
     }
-
-    qubits[0]->_display();
     
     cout << "Measured state: ";
     for (int i = 0; i < n_qubits; i++) {

@@ -33,6 +33,7 @@ class Qubit {
 
 class QubitState {
     private:
+    
         vector<Qubit*> qubits;
         vector<complex<float>> amplitudes;
         void entangle(Qubit* qubit);

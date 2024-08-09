@@ -1,6 +1,6 @@
 
 #include <iostream>
-#include "quantum.h"
+#include "quantum/quantum.h"
 
 using namespace std;
 
