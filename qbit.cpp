@@ -187,6 +187,27 @@ void qgate::mcz(vector<qbit*> controls, qbit* target) {
     target->state->amplitudes = new_amplitudes;
 }
 
+void qgate::mcz(vector<qbit*> qubits) {
+    qgate::entangle(qubits);
+    qgate::entangle(qubits[0], qubits[qubits.size()-1]);
+    vector<complex<float>> new_amplitudes(qubits[qubits.size()-1]->state->amplitudes.size());
+    for (int i = 0; i < qubits[qubits.size()-1]->state->amplitudes.size(); i++) {
+        bool controlFlag = true;
+        for (qbit* qubit : qubits) {
+            if (!((i >> qubit->state_index) & 1)) {
+                controlFlag = false;
+                break;
+            }
+        }
+        if (controlFlag) {
+            new_amplitudes[i] = -qubits[qubits.size()-1]->state->amplitudes[i];
+        } else {
+            new_amplitudes[i] = qubits[qubits.size()-1]->state->amplitudes[i];
+        }
+    }
+    qubits[qubits.size()-1]->state->amplitudes = new_amplitudes;
+}
+
 bool qgate::measure(qbit* qbit) {
     float prob = 0;
     for (int i = 0; i < qbit->state->amplitudes.size(); i++) {

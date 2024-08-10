@@ -18,6 +18,7 @@ namespace qgate {
     void cx(qbit* control, qbit* target);
     void mcx(vector<qbit*> controls, qbit* target);
     void mcz(vector<qbit*> controls, qbit* target);
+    void mcz(vector<qbit*> qubits);
     void entangle(qbit* qbit1, qbit* qbit2);
     void entangle(vector<qbit*> qbits);
     bool measure(qbit* qbit);
