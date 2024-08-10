@@ -1,39 +1,29 @@
 
 #include <iostream>
+#include <chrono>
 #include "qbyte.h"
 
 using namespace std;
+using namespace qgate;
+
 
 int main() {
-    qbit q1(false);
-    qbit q2(false);
-    qbit q3(true);
+    auto start = chrono::high_resolution_clock::now();
 
-    qgate::h(&q1);
-    qgate::h(&q2);
-    qgate::h(&q3);
+    qbyte_t q1(0);
+    qbyte_t q2(10);
 
-    qgate::x(&q1);
-    qgate::mcx({&q1, &q2}, &q3);
-    qgate::x(&q1);
+    q1.h();
 
-    qgate::h(&q1);
-    qgate::h(&q2);
-    qgate::h(&q3);
+    q2 += q1;
 
-    qgate::x(&q1);
-    qgate::x(&q2);
+    cout << (int)q1 << endl;
+    cout << (int)q2 << endl;
 
-    qgate::mcz({&q1, &q2}, &q3);
-
-    qgate::x(&q1);
-    qgate::x(&q2);
-
-    qgate::h(&q1);
-    qgate::h(&q2);
-
-    cout << "q1: " << qgate::measure(&q1) << endl;
-    cout << "q2: " << qgate::measure(&q2) << endl;
+    auto stop = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+    cout << "Time taken: " << duration.count() / 1000.0 << " ms" << endl;
 
     return 0;
 }
+

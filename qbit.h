@@ -12,6 +12,7 @@ class qbit;
 
 namespace qgate {
     void x(qbit* qbit);
+    void x(vector<qbit*> qbits);
     void z(qbit* qbit);
     void h(qbit* qbit);
     void cx(qbit* control, qbit* target);
@@ -35,6 +36,8 @@ class qbit {
         int state_index;
         qbit();
         qbit(bool value);
+        qbit(const qbit& q);            // disallow copy constructor
+        qbit& operator=(const qbit& q); // disallow copy assignment
         ~qbit();
 
         void _display();

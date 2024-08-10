@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <random>
 using namespace std;
 
 
@@ -17,7 +18,9 @@ qbit_state::qbit_state(qbit* qbit, bool init_value): qbits({qbit}) {
 
 qbit::qbit(): state(make_shared<qbit_state>(this)), state_index(0) {}
 qbit::qbit(bool value): state(make_shared<qbit_state>(this, value)), state_index(0) {}
-qbit::~qbit() {}
+qbit::~qbit() {
+    qgate::measure(this);
+}
 
 void qbit::_display() {
     for (int i = 0; i < this->state->amplitudes.size(); i++) {
@@ -32,6 +35,17 @@ void qbit::_display() {
     cout << endl;
 }
 
+qbit::qbit(const qbit& q) {
+    cerr << "Copy constructor is disallowed" << endl;
+    exit(1);
+}
+
+qbit& qbit::operator=(const qbit& q) {
+    cerr << "Copy assignment is disallowed" << endl;
+    exit(1);
+}
+
+
 
 
 void qgate::x(qbit* qbit) {
@@ -41,6 +55,23 @@ void qgate::x(qbit* qbit) {
         new_amplitudes[target] = qbit->state->amplitudes[i];
     }
     qbit->state->amplitudes = new_amplitudes;
+}
+
+void qgate::x(vector<qbit*> qbits) {
+    if (qbits.size() == 0) {
+        return;
+    }
+    qgate::entangle(qbits);
+    vector<complex<float>> new_amplitudes(qbits[0]->state->amplitudes.size());
+    int mask = 0;
+    for (qbit* qbit : qbits) {
+        mask |= 1 << qbit->state_index;
+    }
+    for (int i = 0; i < qbits[0]->state->amplitudes.size(); i++) {
+        const int target = i ^ mask;
+        new_amplitudes[target] = qbits[0]->state->amplitudes[i];
+    }
+    qbits[0]->state->amplitudes = new_amplitudes;
 }
 
 void qgate::z(qbit* qbit) {
@@ -83,10 +114,11 @@ void qgate::entangle(qbit* qbit1, qbit* qbit2) {
         }
     }
 
-    
+    int qbit1_state_size = qbit1->state->qbits.size();
+
     qbit1->state->amplitudes = new_amplitudes;
     for (qbit* qbit : qbit2->state->qbits) {
-        qbit->state_index += qbit1->state->qbits.size();
+        qbit->state_index += qbit1_state_size;
         qbit->state = qbit1->state;
         qbit1->state->qbits.push_back(qbit);
     }
@@ -139,7 +171,6 @@ void qgate::mcz(vector<qbit*> controls, qbit* target) {
     qgate::entangle(controls[0], target);
     vector<complex<float>> new_amplitudes(target->state->amplitudes.size());
     for (int i = 0; i < target->state->amplitudes.size(); i++) {
-        const int tInd = i;
         bool controlFlag = true;
         for (qbit* control : controls) {
             if (!((i >> control->state_index) & 1)) {
@@ -163,13 +194,23 @@ bool qgate::measure(qbit* qbit) {
             prob += norm(qbit->state->amplitudes[i]);
         }
     }
-    bool result = ((float)rand() / RAND_MAX) < prob;
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_real_distribution<float> dis(0, 1);
+    bool result = dis(gen) < prob;
+
+    float norm_factor = 0;
+    for (int i = 0; i < qbit->state->amplitudes.size(); i++) {
+        if (((i >> qbit->state_index) & 1) == result) {
+            norm_factor += norm(qbit->state->amplitudes[i]);
+        }
+    }
     
     vector<complex<float>> new_amplitudes(qbit->state->amplitudes.size()/2);
     int newInd = 0;
     for (int i = 0; i < qbit->state->amplitudes.size(); i++) {
         if (((i >> qbit->state_index) & 1) == result) {
-            new_amplitudes[newInd] = qbit->state->amplitudes[i];
+            new_amplitudes[newInd] = qbit->state->amplitudes[i] / sqrt(norm_factor);
             newInd++;
         }
     }
@@ -178,9 +219,11 @@ bool qgate::measure(qbit* qbit) {
     for (int i = qbit->state_index + 1; i < qbit->state->qbits.size(); i++) {
         qbit->state->qbits[i]->state_index--;
     }
+
     qbit->state->qbits.erase(qbit->state->qbits.begin() + qbit->state_index);
 
     qbit->state_index = 0;
+
     qbit->state = make_shared<qbit_state>(qbit, result);
 
     return result;
