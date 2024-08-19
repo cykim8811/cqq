@@ -66,6 +66,9 @@ class QuantumRegister {
             }
         }
         QuantumRegister(QuantumRegister<N>& other) {
+            for (int i=0; i<QuantumRegister<N>::size; i++) {
+                qbits.push_back(new qbit(0));
+            }
             *this = other;
         }
         QuantumRegister(int value) {

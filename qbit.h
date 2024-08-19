@@ -22,6 +22,7 @@ namespace qgate {
     void entangle(qbit* qbit1, qbit* qbit2);
     void entangle(vector<qbit*> qbits);
     bool measure(qbit* qbit);
+    void del(qbit* qbit);
 }
 
 class qbit_state {

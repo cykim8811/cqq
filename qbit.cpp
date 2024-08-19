@@ -19,7 +19,7 @@ qbit_state::qbit_state(qbit* qbit, bool init_value): qbits({qbit}) {
 qbit::qbit(): state(make_shared<qbit_state>(this)), state_index(0) {}
 qbit::qbit(bool value): state(make_shared<qbit_state>(this, value)), state_index(0) {}
 qbit::~qbit() {
-    qgate::measure(this);
+    qgate::del(this);
 }
 
 void qbit::_display() {
@@ -250,6 +250,9 @@ bool qgate::measure(qbit* qbit) {
     return result;
 }
 
+void qgate::del(qbit* qbit) {
+    
+}
 
 
 
