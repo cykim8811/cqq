@@ -48,6 +48,26 @@ QCircuit increment(int start, int end, int anc_idx, int cond_idx) {
     return circuit;
 }
 
+QCircuit add(int target_start, int target_end, int value_start, int value_end, int anc1_idx, int anc2_idx, int cond_idx) {
+    QCircuit circuit;
+    for (int i=0; i<value_end-value_start; i++) {
+        circuit.mcx({value_start + i, cond_idx}, anc1_idx);
+        circuit.add_gate(make_unique<QCircuit>(increment(target_start + i, target_end, anc2_idx, anc1_idx)));
+        circuit.mcx({value_start + i, cond_idx}, anc1_idx);
+    }
+    return circuit;
+}
+
+QCircuit swap(int a, int b, int count, int cond_idx) {
+    QCircuit circuit;
+    for (int i=0; i<count; i++) {
+        circuit.mcx({cond_idx, a+i}, b+i);
+        circuit.mcx({cond_idx, b+i}, a+i);
+        circuit.mcx({cond_idx, a+i}, b+i);
+    }
+    return circuit;
+}
+
 
 template <int N>
 class QuantumRegister {
