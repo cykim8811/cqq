@@ -6,37 +6,41 @@
 
 using namespace std;
 
-unique_ptr<Qgate> x(QMemory* qm, Qubit& q) {
-    unique_ptr<Qgate> gate = make_unique<XGate>(qm, q.index);
-    return gate;
+void x(QMemory* qm, Qubit& q) {
+    q.context->gates.push_back(make_unique<XGate>(qm, q.index));
 }
 
-unique_ptr<Qgate> cx(QMemory* qm, Qubit& control, Qubit& target) {
-    unique_ptr<Qgate> gate = make_unique<CXGate>(qm, control.index, target.index);
-    return gate;
+void cx(QMemory* qm, Qubit& control, Qubit& target) {
+    if (control.context == target.context) {
+        control.context->gates.push_back(make_unique<CXGate>(qm, control.index, target.index));
+        return;
+    }
+    shared_ptr<Context> new_context = make_shared<Context>();
+    for (auto& gate : control.context->gates) {
+        new_context->gates.push_back(move(gate));
+    }
+    control.context->gates.clear();
+    for (auto& gate : target.context->gates) {
+        new_context->gates.push_back(move(gate));
+    }
+    target.context->gates.clear();
+    new_context->gates.push_back(make_unique<CXGate>(qm, control.index, target.index));
+    control.context = new_context;
+    target.context = new_context;
 }
 
-
-void test(QMemory *qm, Qubit a, Qubit b) {
-    x(qm, a);
-    cx(qm, a, b);
-    x(qm, a);
-    qm->_display();
-}
 
 int main() {
-    QMemory *qm = new QMemory(2);
+    QMemory qm(3);
 
-    Qubit a(qm, 0);
-    Qubit b(qm, 1);
+    Qubit a(&qm, 0);
+    Qubit b(&qm, 1);
+    Qubit c(&qm, 2);
 
     
-    test(qm, a, b);
 
+    qm._display();
 
-    qm->_display();
-
-    delete qm;
     return 0;
 }
 
