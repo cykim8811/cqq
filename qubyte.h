@@ -30,11 +30,11 @@ public:
         transform->apply();
     };
 
-    friend void swap(QByte &first, QByte &second) noexcept {
+    friend void swap(QByte &first, QByte &second) {
         swap(first.transform, second.transform);
     };
 
-    QByte& operator=(QByte q) noexcept {
+    QByte& operator=(QByte q) {
         swap(*this, q);
         return *this;
     };
@@ -57,6 +57,12 @@ public:
 
     QByte operator-() {
         return QByte(make_shared<TBNeg<N>>(transform));
+    };
+
+    QByte operator^=(QByte q) {
+        QByte xor_qubit = QByte(make_shared<TBXOR<N>>(transform, q.transform));
+        swap(*this, xor_qubit);
+        return *this;
     };
 
     operator int() {
@@ -88,6 +94,12 @@ typedef QByte<4> qnibl_t;
 template<int N>
 QByte<N> h(QByte<N> &q) {
     return QByte<N>(make_shared<TBH<N>>(q.transform));
+};
+
+template<typename T>
+T h(int value) {
+    T v = T(value);
+    return h(v);
 };
 
 

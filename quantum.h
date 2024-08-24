@@ -36,6 +36,7 @@ protected:
     vector<shared_ptr<QTransform>> children;
 public:
     T *data;
+    bool applied = false;
     void apply() {
         forward();
     };

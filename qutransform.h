@@ -152,18 +152,40 @@ class TBH: public QTransform<QuantumRegister<N>> {
 private:
     void forward() {
         this->data = new QuantumRegister<N>();
-        (*this->data) += (*this->children[0]->data);
-        (*this->data).h();
+        (*this->data) ^= (*this->children[0]->data);
+        this->data->h();
     };
     void backward() {
-        (*this->data).h();
-        (*this->data) -= (*this->children[0]->data);
+        cout << "~H" << endl;
+        this->data->h();
+        (*this->data) ^= (*this->children[0]->data);
         (int) (*this->data);   // Measure
         delete this->data;
     };
 public:
     TBH(shared_ptr<QTransform<QuantumRegister<N>>>& target) {
         this->children.push_back(target);
+    };
+};
+
+template<int N>
+class TBXOR: public QTransform<QuantumRegister<N>> {
+private:
+    void forward() {
+        this->data = new QuantumRegister<N>();
+        (*this->data) += (*this->children[0]->data);
+        (*this->data) ^= (*this->children[1]->data);
+    };
+    void backward() {
+        (*this->data) ^= (*this->children[1]->data);
+        (*this->data) -= (*this->children[0]->data);
+        (int) (*this->data);   // Measure
+        delete this->data;
+    };
+public:
+    TBXOR(shared_ptr<QTransform<QuantumRegister<N>>>& target1, shared_ptr<QTransform<QuantumRegister<N>>>& target2) {
+        this->children.push_back(target1);
+        this->children.push_back(target2);
     };
 };
 
