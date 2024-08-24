@@ -16,7 +16,10 @@ private:
         this->data = new QuantumRegister<N>(initial_value);
     };
     void backward() {
-        (int) (*this->data);   // Measure
+        int final_value = (int) (*this->data);   // Measure
+        if (final_value != initial_value) {
+            cerr << "Warning: back-calculation failed" << endl;
+        }
         delete this->data;
     };
 public:
@@ -140,6 +143,26 @@ private:
     };
 public:
     TBNeg(shared_ptr<QTransform<QuantumRegister<N>>>& target) {
+        this->children.push_back(target);
+    };
+};
+
+template<int N>
+class TBH: public QTransform<QuantumRegister<N>> {
+private:
+    void forward() {
+        this->data = new QuantumRegister<N>();
+        (*this->data) += (*this->children[0]->data);
+        (*this->data).h();
+    };
+    void backward() {
+        (*this->data).h();
+        (*this->data) -= (*this->children[0]->data);
+        (int) (*this->data);   // Measure
+        delete this->data;
+    };
+public:
+    TBH(shared_ptr<QTransform<QuantumRegister<N>>>& target) {
         this->children.push_back(target);
     };
 };

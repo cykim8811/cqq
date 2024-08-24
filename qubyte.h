@@ -66,6 +66,29 @@ public:
 };
 
 
+typedef QByte<8> qbyte_t;
+typedef QByte<8> qchar_t;
+typedef QByte<16> qshort_t;
+typedef QByte<32> qint_t;
+typedef QByte<64> qlong_t;
+typedef QByte<64> qlonglong_t;
+
+typedef QByte<1> qint1_t;
+typedef QByte<2> qint2_t;
+typedef QByte<4> qint4_t;
+typedef QByte<8> qint8_t;
+typedef QByte<16> qint16_t;
+typedef QByte<64> qint64_t;
+
+typedef QByte<1> qbool_t;
+typedef QByte<1> qbit_t;
+typedef QByte<2> qdibit_t;
+typedef QByte<4> qnibl_t;
+
+template<int N>
+QByte<N> h(QByte<N> &q) {
+    return QByte<N>(make_shared<TBH<N>>(q.transform));
+};
 
 
 #endif  // QUBYTE_H

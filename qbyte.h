@@ -189,25 +189,6 @@ class QuantumRegister {
         
 };
 
-// typedef QuantumRegister<8> qbyte_t;
-// typedef QuantumRegister<8> qchar_t;
-// typedef QuantumRegister<16> qshort_t;
-// typedef QuantumRegister<32> qint_t;
-// typedef QuantumRegister<64> qlong_t;
-// typedef QuantumRegister<64> qlonglong_t;
-
-// typedef QuantumRegister<1> qint1_t;
-// typedef QuantumRegister<2> qint2_t;
-// typedef QuantumRegister<4> qint4_t;
-// typedef QuantumRegister<8> qint8_t;
-// typedef QuantumRegister<16> qint16_t;
-// typedef QuantumRegister<64> qint64_t;
-
-// typedef QuantumRegister<1> qbool_t;
-// typedef QuantumRegister<1> qbit_t;
-// typedef QuantumRegister<2> qdibit_t;
-// typedef QuantumRegister<4> qnibl_t;
-
 
 
 #endif // QBYTE_H
