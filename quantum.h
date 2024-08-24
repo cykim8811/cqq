@@ -10,6 +10,7 @@
 
 using namespace std;
 
+template<typename T>
 class QTransform {
 private:
     bool alive;
@@ -34,7 +35,7 @@ private:
 protected:
     vector<shared_ptr<QTransform>> children;
 public:
-    qbit *bit;
+    T *data;
     void apply() {
         forward();
     };

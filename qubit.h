@@ -8,8 +8,8 @@
 
 class Qubit {
 public:
-    shared_ptr<QTransform> transform;
-    Qubit(shared_ptr<QTransform> _transform): transform(move(_transform)) {
+    shared_ptr<QTransform<qbit>> transform;
+    Qubit(shared_ptr<QTransform<qbit>> _transform): transform(move(_transform)) {
         transform->apply();
     };
 
@@ -51,11 +51,11 @@ public:
     };
 
     operator int() {
-        return qgate::measure(transform->bit);
+        return qgate::measure(transform->data);
     };
 
     operator bool() {
-        return qgate::measure(transform->bit);
+        return qgate::measure(transform->data);
     };
 
     static Qubit h(Qubit q) {
