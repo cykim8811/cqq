@@ -2,70 +2,47 @@
 #ifndef QUANTUM_H
 #define QUANTUM_H
 
-#include <iostream>
 #include <vector>
 #include <complex>
 #include <memory>
-#include <algorithm>
 
-class Qubit;
+using namespace std;
+
+class QState;
 
 class QTransform {
 public:
-    virtual void apply(std::vector<std::complex<float>>& amp) = 0;
+    bool applied = false;
+    virtual void forward(QState* target) = 0;
+    virtual void backward(QState* target) = 0;
 };
 
 class QState {
 public:
-    std::vector<std::complex<float>> amp;
-    std::vector<Qubit*> qubit;
-    QState() {}
-    QState(Qubit* qubit): amp({1, 0}), qubit({qubit}) {}
-    void apply(QTransform *gate) {
-        gate->apply(amp);
+    vector<unique_ptr<QTransform>> transforms;
+    int forward(unique_ptr<QTransform> transform) {
+        transforms.push_back(transform);
+        transform->forward(this);
+        transform->applied = true;
+        return transforms.size() - 1;
     }
-    static void merge(std::vector<std::shared_ptr<QState>> states);
-    void _print() {
-        std::cout << "QState: ";
-        for (auto a : amp) {
-            std::cout << a << " ";
-        }
-        std::cout << std::endl;
-    }
-};
-
-class Qubit {
-public:
-    std::shared_ptr<QTransform> transform;
-    std::shared_ptr<QState> state;
-    Qubit() {
-        state = std::make_shared<QState>(this);
-        transform = nullptr;
-    }
-    void _print() {
-        state->_print();
-    }
-    friend class QState;
-};
-
-void QState::merge(std::vector<std::shared_ptr<QState>> states) {
-    states.erase(std::unique(states.begin(), states.end()), states.end());
-    std::shared_ptr<QState> result = std::make_shared<QState>();
-    result->amp = {1};
-    for (auto s : states) {
-        std::vector<std::complex<float>> new_amp;
-        for (auto a : s->amp) {
-            for (auto r : result->amp) {
-                new_amp.push_back(a * r);
+    void backward(int index) {
+        // transforms[index]->backward(this);
+        for (int i = 0; i <= index-1; i++) {
+            if (!transforms[i]->applied) {
+                transforms[i]->forward(this);
             }
         }
-        result->amp = new_amp;
-        result->qubit.insert(result->qubit.end(), s->qubit.begin(), s->qubit.end());
+        transforms[index]->backward(this);
+        transforms[index]->applied = false;
+        for (int i = index-1; i >= 0; i--) {
+            if (!transforms[i]->applied) {
+                transforms[i]->backward(this);
+            }
+        }
     }
-    for (auto q : result->qubit) {
-        q->state = result;
-    }
-}
+};
 
 
 #endif // QUANTUM_H
+
