@@ -109,7 +109,7 @@ QByte<N> h(QByte<N> &q) {
 };
 
 template<int N>
-QByte<N> z(QByte<N> q) {
+QByte<N> z(const QByte<N> &q) {
     return QByte<N>(make_shared<TBZ<N>>(q.transform));
 };
 

@@ -191,13 +191,20 @@ template<int N>
 class TBZ: public QTransform<QuantumRegister<N>> {
 private:
     void forward() {
-        this->children[0]->data->z();
+        this->data = new QuantumRegister<N>();
+        (*this->data) ^= (*this->children[0]->data);
+        this->data->z();
+        (*this->data) ^= (*this->children[0]->data);
     };
     void backward() {
-        this->children[0]->data->z();
+        (*this->data) ^= (*this->children[0]->data);
+        this->data->z();
+        (*this->data) ^= (*this->children[0]->data);
+        (int) (*this->data);   // Measure
+        delete this->data;
     };
 public:
-    TBZ(shared_ptr<QTransform<QuantumRegister<N>>>& target) {
+    TBZ(const shared_ptr<QTransform<QuantumRegister<N>>>& target) {
         this->children.push_back(target);
     };
 };

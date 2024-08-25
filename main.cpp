@@ -4,6 +4,7 @@
 #include "qubyte.h"
 #include "qtransform.h"
 
+#include <memory>
 #include <iostream>
 
 using namespace std;
@@ -20,11 +21,9 @@ int main() {
     qbool_t a = h<qbool_t>(0);
     qbool_t b = h<qbool_t>(0);
 
-    qbool_t res2 = z(oracle(a, b));
+    qbool_t c = z(oracle(a, b));
 
-    a.transform->data->_display();
-
-    res2.transform->data->_display();
+    cout << "b.size(): " << b.transform->data->qbits.size() << endl;
 
     
     return 0;
