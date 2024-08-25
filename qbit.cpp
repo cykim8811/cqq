@@ -2,8 +2,10 @@
 #include "qbit.h"
 
 #include <iostream>
+#include <iomanip>
 #include <algorithm>
 #include <random>
+
 using namespace std;
 
 
@@ -23,16 +25,27 @@ qbit::~qbit() {
 }
 
 void qbit::_display() {
+    cout << "[ ";
     for (int i = 0; i < this->state->amplitudes.size(); i++) {
-        cout << this->state->amplitudes[i].real();
-        if (this->state->amplitudes[i].imag() > 0) {
-            cout << " + " << this->state->amplitudes[i].imag() << "i";
-        } else if (this->state->amplitudes[i].imag() < 0) {
-            cout << " - " << -this->state->amplitudes[i].imag() << "i";
+        cout << fixed << setprecision(2) << setw(6) << right;
+        
+        double real = this->state->amplitudes[i].real();
+        double imag = this->state->amplitudes[i].imag();
+        
+        if (abs(real) < 1e-10) real = 0.0;
+        if (abs(imag) < 1e-10) imag = 0.0;
+
+        if (imag == 0.0) {
+            cout << real;
+        } else {
+            cout << complex<double>(real, imag);
         }
-        cout << " ";
+        
+        if (i < this->state->amplitudes.size() - 1) {
+            cout << " , ";
+        }
     }
-    cout << endl;
+    cout << " ]" << endl;
 }
 
 qbit::qbit(const qbit& q) {

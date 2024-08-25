@@ -59,13 +59,25 @@ public:
         return QByte(make_shared<TBNeg<N>>(transform));
     };
 
+    QByte operator~() {
+        return QByte(make_shared<TBNot<N>>(transform));
+    };
+
+    QByte operator&(QByte q) {
+        return QByte(make_shared<TBAnd<N>>(transform, q.transform));
+    };
+
+    QByte operator^(QByte q) {
+        return QByte(make_shared<TBXOR<N>>(transform, q.transform));
+    };
+
     QByte operator^=(QByte q) {
         QByte xor_qubit = QByte(make_shared<TBXOR<N>>(transform, q.transform));
         swap(*this, xor_qubit);
         return *this;
     };
 
-    operator int() {
+    explicit operator int() {
         return (int)(*transform->data);
     };
 
@@ -94,6 +106,11 @@ typedef QByte<4> qnibl_t;
 template<int N>
 QByte<N> h(QByte<N> &q) {
     return QByte<N>(make_shared<TBH<N>>(q.transform));
+};
+
+template<int N>
+QByte<N> z(QByte<N> q) {
+    return QByte<N>(make_shared<TBZ<N>>(q.transform));
 };
 
 template<typename T>

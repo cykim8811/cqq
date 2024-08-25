@@ -8,13 +8,23 @@
 
 using namespace std;
 
+qbool_t oracle(qbool_t &x, qbool_t &y) {
+    return x & y;
+}
+
 int main() {
-    qbool_t b = 1;
-    qbool_t c = h(b);
+    // Grover's algorithm
 
-    
+    cout << "Grover's algorithm" << endl;
 
-    c.transform->data->_display();
+    qbool_t a = h<qbool_t>(0);
+    qbool_t b = h<qbool_t>(0);
+
+    qbool_t res2 = z(oracle(a, b));
+
+    a.transform->data->_display();
+
+    res2.transform->data->_display();
 
     
     return 0;

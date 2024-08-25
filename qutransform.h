@@ -148,6 +148,26 @@ public:
 };
 
 template<int N>
+class TBNot: public QTransform<QuantumRegister<N>> {
+private:
+    void forward() {
+        this->data = new QuantumRegister<N>();
+        (*this->data) ^= (*this->children[0]->data);
+        this->data->x();
+    };
+    void backward() {
+        this->data->x();
+        (*this->data) ^= (*this->children[0]->data);
+        (int) (*this->data);   // Measure
+        delete this->data;
+    };
+public:
+    TBNot(shared_ptr<QTransform<QuantumRegister<N>>>& target) {
+        this->children.push_back(target);
+    };
+};
+
+template<int N>
 class TBH: public QTransform<QuantumRegister<N>> {
 private:
     void forward() {
@@ -156,7 +176,6 @@ private:
         this->data->h();
     };
     void backward() {
-        cout << "~H" << endl;
         this->data->h();
         (*this->data) ^= (*this->children[0]->data);
         (int) (*this->data);   // Measure
@@ -165,6 +184,44 @@ private:
 public:
     TBH(shared_ptr<QTransform<QuantumRegister<N>>>& target) {
         this->children.push_back(target);
+    };
+};
+
+template<int N>
+class TBZ: public QTransform<QuantumRegister<N>> {
+private:
+    void forward() {
+        this->children[0]->data->z();
+    };
+    void backward() {
+        this->children[0]->data->z();
+    };
+public:
+    TBZ(shared_ptr<QTransform<QuantumRegister<N>>>& target) {
+        this->children.push_back(target);
+    };
+};
+
+template<int N>
+class TBAnd: public QTransform<QuantumRegister<N>> {
+private:
+    void forward() {
+        this->data = new QuantumRegister<N>();
+        for (int i = 0; i < N; i++) {
+            qgate::mcx({this->children[0]->data->qbits[i], this->children[1]->data->qbits[i]}, this->data->qbits[i]);
+        }
+    };
+    void backward() {
+        for (int i = 0; i < N; i++) {
+            qgate::mcx({this->children[0]->data->qbits[i], this->children[1]->data->qbits[i]}, this->data->qbits[i]);
+        }
+        (int) (*this->data);   // Measure
+        delete this->data;
+    };
+public:
+    TBAnd(shared_ptr<QTransform<QuantumRegister<N>>>& target1, shared_ptr<QTransform<QuantumRegister<N>>>& target2) {
+        this->children.push_back(target1);
+        this->children.push_back(target2);
     };
 };
 
