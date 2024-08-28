@@ -59,12 +59,16 @@ public:
         return QByte(make_shared<TBNeg<N>>(transform));
     };
 
-    QByte operator~() {
+    QByte operator~() const {
         return QByte(make_shared<TBNot<N>>(transform));
     };
 
-    QByte operator&(QByte q) {
+    QByte operator&(QByte q) const {
         return QByte(make_shared<TBAnd<N>>(transform, q.transform));
+    };
+
+    QByte operator|(QByte q) const {
+        return QByte(make_shared<TBOr<N>>(transform, q.transform));
     };
 
     QByte operator^(QByte q) {
@@ -104,20 +108,20 @@ typedef QByte<2> qdibit_t;
 typedef QByte<4> qnibl_t;
 
 template<int N>
-QByte<N> h(const QByte<N> &q) {
-    return QByte<N>(make_shared<TBH<N>>(q.transform));
+void h(const QByte<N> &q) {
+    q.transform->data->h();
 };
 
 template<int N>
-QByte<N> z(const QByte<N> &q) {
-    return QByte<N>(make_shared<TBZ<N>>(q.transform));
+void z(const QByte<N> &q) {
+    q.transform->data->z();
 };
 
-template<typename T>
-T h(int value) {
-    T v = T(value);
-    return h(v);
-};
+// template<typename T>
+// T h(int value) {
+//     T v = T(value);
+//     return h(v);
+// };
 
 
 #endif  // QUBYTE_H

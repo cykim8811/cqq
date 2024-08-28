@@ -162,49 +162,7 @@ private:
         delete this->data;
     };
 public:
-    TBNot(shared_ptr<QTransform<QuantumRegister<N>>>& target) {
-        this->children.push_back(target);
-    };
-};
-
-template<int N>
-class TBH: public QTransform<QuantumRegister<N>> {
-private:
-    void forward() {
-        this->data = new QuantumRegister<N>();
-        (*this->data) ^= (*this->children[0]->data);
-        this->data->h();
-    };
-    void backward() {
-        this->data->h();
-        (*this->data) ^= (*this->children[0]->data);
-        (int) (*this->data);   // Measure
-        delete this->data;
-    };
-public:
-    TBH(const shared_ptr<QTransform<QuantumRegister<N>>>& target) {
-        this->children.push_back(target);
-    };
-};
-
-template<int N>
-class TBZ: public QTransform<QuantumRegister<N>> {
-private:
-    void forward() {
-        this->data = new QuantumRegister<N>();
-        (*this->data) ^= (*this->children[0]->data);
-        this->data->z();
-        (*this->data) ^= (*this->children[0]->data);
-    };
-    void backward() {
-        // (*this->data) ^= (*this->children[0]->data);
-        // this->data->z();
-        // (*this->data) ^= (*this->children[0]->data);
-        (int) (*this->data);   // Measure
-        delete this->data;
-    };
-public:
-    TBZ(const shared_ptr<QTransform<QuantumRegister<N>>>& target) {
+    TBNot(const shared_ptr<QTransform<QuantumRegister<N>>>& target) {
         this->children.push_back(target);
     };
 };
@@ -226,7 +184,40 @@ private:
         delete this->data;
     };
 public:
-    TBAnd(shared_ptr<QTransform<QuantumRegister<N>>>& target1, shared_ptr<QTransform<QuantumRegister<N>>>& target2) {
+    TBAnd(const shared_ptr<QTransform<QuantumRegister<N>>>& target1, const shared_ptr<QTransform<QuantumRegister<N>>>& target2) {
+        this->children.push_back(target1);
+        this->children.push_back(target2);
+    };
+};
+
+template<int N>
+class TBOr: public QTransform<QuantumRegister<N>> {
+private:
+    void forward() {
+        this->data = new QuantumRegister<N>();
+        for (int i = 0; i < N; i++) {
+            qgate::x(this->children[0]->data->qbits[i]);
+            qgate::x(this->children[1]->data->qbits[i]);
+            qgate::mcx({this->children[0]->data->qbits[i], this->children[1]->data->qbits[i]}, this->data->qbits[i]);
+            qgate::x(this->children[1]->data->qbits[i]);
+            qgate::x(this->children[0]->data->qbits[i]);
+            qgate::x(this->data->qbits[i]);
+        }
+    };
+    void backward() {
+        for (int i = 0; i < N; i++) {
+            qgate::x(this->data->qbits[i]);
+            qgate::x(this->children[0]->data->qbits[i]);
+            qgate::x(this->children[1]->data->qbits[i]);
+            qgate::mcx({this->children[0]->data->qbits[i], this->children[1]->data->qbits[i]}, this->data->qbits[i]);
+            qgate::x(this->children[1]->data->qbits[i]);
+            qgate::x(this->children[0]->data->qbits[i]);
+        }
+        (int) (*this->data);   // Measure
+        delete this->data;
+    };
+public:
+    TBOr(const shared_ptr<QTransform<QuantumRegister<N>>>& target1, const shared_ptr<QTransform<QuantumRegister<N>>>& target2) {
         this->children.push_back(target1);
         this->children.push_back(target2);
     };
