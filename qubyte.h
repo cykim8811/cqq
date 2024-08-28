@@ -104,7 +104,7 @@ typedef QByte<2> qdibit_t;
 typedef QByte<4> qnibl_t;
 
 template<int N>
-QByte<N> h(QByte<N> &q) {
+QByte<N> h(const QByte<N> &q) {
     return QByte<N>(make_shared<TBH<N>>(q.transform));
 };
 

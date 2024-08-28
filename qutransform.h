@@ -182,7 +182,7 @@ private:
         delete this->data;
     };
 public:
-    TBH(shared_ptr<QTransform<QuantumRegister<N>>>& target) {
+    TBH(const shared_ptr<QTransform<QuantumRegister<N>>>& target) {
         this->children.push_back(target);
     };
 };
@@ -197,9 +197,9 @@ private:
         (*this->data) ^= (*this->children[0]->data);
     };
     void backward() {
-        (*this->data) ^= (*this->children[0]->data);
-        this->data->z();
-        (*this->data) ^= (*this->children[0]->data);
+        // (*this->data) ^= (*this->children[0]->data);
+        // this->data->z();
+        // (*this->data) ^= (*this->children[0]->data);
         (int) (*this->data);   // Measure
         delete this->data;
     };
