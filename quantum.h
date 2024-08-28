@@ -16,17 +16,30 @@ private:
     bool alive;
     virtual void forward() = 0;
     virtual void backward() = 0;
+
+    void apply_forward() {
+        if (applied) return;
+        forward();
+        applied = true;
+    };
+
+    void apply_backward() {
+        if (!applied) return;
+        backward();
+        applied = false;
+    };
+    
     void temp_forward() {
         for (auto child: children) {
             child->temp_forward();
         }
         if (!alive) {
-            forward();
+            apply_forward();
         }
     };
     void temp_backward() {
         if (!alive) {
-            backward();
+            apply_backward();
         }
         for (auto child: children) {
             child->temp_backward();
@@ -38,7 +51,7 @@ public:
     T *data;
     bool applied = false;
     void apply() {
-        forward();
+        apply_forward();
     };
     void kill() {
         temp_forward();

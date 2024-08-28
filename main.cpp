@@ -7,8 +7,8 @@
 
 using namespace std;
 
-qbool_t oracle(qbool_t &x, qbool_t &y) {
-    return x & y;
+qbool_t oracle(qbool_t &x) {
+    return x & (~x);
 }
 
 int main() {
@@ -17,12 +17,10 @@ int main() {
     cout << "Grover's algorithm" << endl;
 
     qbool_t a = h<qbool_t>(0);
-    qbool_t b = h<qbool_t>(0);
 
-    qbool_t c = z(oracle(a, b));
+    qbool_t b = oracle(a);
 
-    cout << "b.size(): " << b.transform->data->qbits.size() << endl;
-
+    b.transform->data->_display();
     
     return 0;
 }
