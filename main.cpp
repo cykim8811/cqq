@@ -1,8 +1,6 @@
 
 #include "quantum.h"
-#include "qubit.h"
 #include "qubyte.h"
-#include "qtransform.h"
 
 #include <memory>
 #include <iostream>
