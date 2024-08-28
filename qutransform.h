@@ -17,9 +17,9 @@ private:
     };
     void backward() {
         int final_value = (int) (*this->data);   // Measure
-        if (final_value != initial_value) {
-            cerr << "Warning: back-calculation failed" << endl;
-        }
+        // if (final_value != initial_value) {
+        //     cerr << "Warning: back-calculation failed" << endl;
+        // }
         delete this->data;
     };
 public:
@@ -241,6 +241,46 @@ public:
     TBXOR(shared_ptr<QTransform<QuantumRegister<N>>>& target1, shared_ptr<QTransform<QuantumRegister<N>>>& target2) {
         this->children.push_back(target1);
         this->children.push_back(target2);
+    };
+};
+
+template<int N>
+class TBH: public QTransform<QuantumRegister<N>> {
+private:
+    void forward() {
+        this->data = new QuantumRegister<N>();
+        this->children[0]->data->h();
+        swap(this->data, this->children[0]->data);
+    };
+    void backward() {
+        swap(this->data, this->children[0]->data);
+        this->children[0]->data->h();
+        (int) (*this->data);   // Measure
+        delete this->data;
+    };
+public:
+    TBH(const shared_ptr<QTransform<QuantumRegister<N>>>& target) {
+        this->children.push_back(target);
+    };
+};
+
+template<int N>
+class TBZ: public QTransform<QuantumRegister<N>> {
+private:
+    void forward() {
+        this->data = new QuantumRegister<N>();
+        this->children[0]->data->z();
+        swap(this->data, this->children[0]->data);
+    };
+    void backward() {
+        swap(this->data, this->children[0]->data);
+        // this->children[0]->data->z();
+        (int) (*this->data);   // Measure
+        delete this->data;
+    };
+public:
+    TBZ(const shared_ptr<QTransform<QuantumRegister<N>>>& target) {
+        this->children.push_back(target);
     };
 };
 

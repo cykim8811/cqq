@@ -108,20 +108,20 @@ typedef QByte<2> qdibit_t;
 typedef QByte<4> qnibl_t;
 
 template<int N>
-void h(const QByte<N> &q) {
-    q.transform->data->h();
+QByte<N> h(const QByte<N> &q) {
+    return QByte<N>(make_shared<TBH<N>>(q.transform));
 };
 
 template<int N>
-void z(const QByte<N> &q) {
-    q.transform->data->z();
+QByte<N> z(const QByte<N> &q) {
+    return QByte<N>(make_shared<TBZ<N>>(q.transform));
 };
 
-// template<typename T>
-// T h(int value) {
-//     T v = T(value);
-//     return h(v);
-// };
+template<typename T>
+T h(int value) {
+    T v = T(value);
+    return h(v);
+};
 
 
 #endif  // QUBYTE_H
