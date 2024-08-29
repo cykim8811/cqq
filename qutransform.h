@@ -41,6 +41,7 @@ private:
     };
 public:
     TBCopy(shared_ptr<QTransform<QuantumRegister<N>>> target) {
+        cout << "Copying" << endl;
         this->children.push_back(target);
     };
 };
@@ -249,12 +250,22 @@ class TBH: public QTransform<QuantumRegister<N>> {
 private:
     void forward() {
         this->data = new QuantumRegister<N>();
-        this->children[0]->data->h();
-        swap(this->data, this->children[0]->data);
+        // swap
+        for (int i = 0; i < N; i++) {
+            qgate::cx(this->children[0]->data->qbits[i], this->data->qbits[i]);
+            qgate::cx(this->data->qbits[i], this->children[0]->data->qbits[i]);
+            qgate::cx(this->children[0]->data->qbits[i], this->data->qbits[i]);
+        }
+        this->data->h();
     };
     void backward() {
-        swap(this->data, this->children[0]->data);
-        this->children[0]->data->h();
+        this->data->h();
+        // swap
+        for (int i = 0; i < N; i++) {
+            qgate::cx(this->children[0]->data->qbits[i], this->data->qbits[i]);
+            qgate::cx(this->data->qbits[i], this->children[0]->data->qbits[i]);
+            qgate::cx(this->children[0]->data->qbits[i], this->data->qbits[i]);
+        }
         (int) (*this->data);   // Measure
         delete this->data;
     };
@@ -269,12 +280,22 @@ class TBZ: public QTransform<QuantumRegister<N>> {
 private:
     void forward() {
         this->data = new QuantumRegister<N>();
-        this->children[0]->data->z();
-        swap(this->data, this->children[0]->data);
+        // swap
+        for (int i = 0; i < N; i++) {
+            qgate::cx(this->children[0]->data->qbits[i], this->data->qbits[i]);
+            qgate::cx(this->data->qbits[i], this->children[0]->data->qbits[i]);
+            qgate::cx(this->children[0]->data->qbits[i], this->data->qbits[i]);
+        }
+        this->data->z();
     };
     void backward() {
-        swap(this->data, this->children[0]->data);
-        // this->children[0]->data->z();
+        this->data->z();
+        // swap
+        for (int i = 0; i < N; i++) {
+            qgate::cx(this->children[0]->data->qbits[i], this->data->qbits[i]);
+            qgate::cx(this->data->qbits[i], this->children[0]->data->qbits[i]);
+            qgate::cx(this->children[0]->data->qbits[i], this->data->qbits[i]);
+        }
         (int) (*this->data);   // Measure
         delete this->data;
     };

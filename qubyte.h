@@ -27,6 +27,7 @@ public:
     };
 
     QByte(const QByte &q): transform(make_shared<TBCopy<N>>(q.transform)) {
+        cout << "Copying" << endl;
         transform->apply();
     };
 
@@ -34,16 +35,26 @@ public:
         swap(first.transform, second.transform);
     };
 
-    QByte& operator=(QByte q) {
+    QByte& operator=(QByte &q) {
+        if (this == &q) return *this;
         swap(*this, q);
         return *this;
+    };
+
+    QByte& operator=(QByte &&q) {
+        swap(*this, q);
+        return *this;
+    };
+
+    QByte(QByte&& q) {
+        swap(*this, q);
     };
 
     QByte operator+(int value) {
         return QByte(make_shared<TBAddi<N>>(transform, value));
     };
 
-    QByte operator+(QByte q) {
+    QByte operator+(const QByte &q) {
         return QByte(make_shared<TBAdd<N>>(transform, q.transform));
     };
 
@@ -51,7 +62,7 @@ public:
         return QByte(make_shared<TBSubi<N>>(transform, value));
     };
 
-    QByte operator-(QByte q) {
+    QByte operator-(const QByte &q) {
         return QByte(make_shared<TBSub<N>>(transform, q.transform));
     };
 
@@ -63,19 +74,19 @@ public:
         return QByte(make_shared<TBNot<N>>(transform));
     };
 
-    QByte operator&(QByte q) const {
+    QByte operator&(const QByte &q) const {
         return QByte(make_shared<TBAnd<N>>(transform, q.transform));
     };
 
-    QByte operator|(QByte q) const {
+    QByte operator|(const QByte &q) const {
         return QByte(make_shared<TBOr<N>>(transform, q.transform));
     };
 
-    QByte operator^(QByte q) {
+    QByte operator^(const QByte &q) {
         return QByte(make_shared<TBXOR<N>>(transform, q.transform));
     };
 
-    QByte operator^=(QByte q) {
+    QByte operator^=(QByte &q) {
         QByte xor_qubit = QByte(make_shared<TBXOR<N>>(transform, q.transform));
         swap(*this, xor_qubit);
         return *this;
