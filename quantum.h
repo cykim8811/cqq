@@ -29,22 +29,61 @@ private:
         applied = false;
     };
     
+    // void temp_forward() {
+    //     for (auto child: children) {
+    //         child->temp_forward();
+    //     }
+    //     if (!alive) {
+    //         apply_forward();
+    //     }
+    // };
+
     void temp_forward() {
-        for (auto child: children) {
-            child->temp_forward();
+        vector<QTransform<T>*> queue;
+        vector<QTransform<T>*> order;
+        queue.push_back(this);
+        while (!queue.empty()) {
+            QTransform<T>* current = queue.back();
+            queue.pop_back();
+            order.push_back(current);
+            for (auto child: current->children) {
+                queue.push_back(child.get());
+            }
         }
-        if (!alive) {
-            apply_forward();
+        reverse(order.begin(), order.end());
+        for (auto current: order) {
+            if (!current->alive) {
+                current->apply_forward();
+            }
         }
     };
+        
+    
+    // void temp_backward() {
+    //     if (!alive) {
+    //         apply_backward();
+    //     }
+    //     for (auto child: children) {
+    //         child->temp_backward();
+    //     }
+    // };
+
     void temp_backward() {
-        if (!alive) {
-            apply_backward();
-        }
-        for (auto child: children) {
-            child->temp_backward();
+        vector<QTransform<T>*> queue;
+        queue.push_back(this);
+        while (!queue.empty()) {
+            QTransform<T>* current = queue.back();
+            queue.pop_back();
+            if (!current->alive) {
+                current->apply_backward();
+            }
+            for (auto child: current->children) {
+                queue.push_back(child.get());
+            }
         }
     };
+        
+
 protected:
     vector<shared_ptr<QTransform>> children;
 public:

@@ -27,7 +27,6 @@ public:
     };
 
     QByte(const QByte &q): transform(make_shared<TBCopy<N>>(q.transform)) {
-        cout << "Copying" << endl;
         transform->apply();
     };
 

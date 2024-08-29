@@ -42,16 +42,12 @@ int main() {
     // }
 
     qbool_t a = 0;
-    cout << 1 << endl;
-    qbool_t r = a & a;
-    cout << 2 << endl;
+    qbool_t b = ~a;
+    qbool_t r = QByte<1>(make_shared<TBAnd<1>>(a.transform, b.transform));
     a = 0;
-    cout << 2 << endl;
-    qbool_t s = ~r;
-    cout << 3 << endl;
-    s = 0;
-    cout << 4 << endl;
-
+    b = 0;
+    r = 0;
+    cout << "l1" << endl;
     
     return 0;
 }

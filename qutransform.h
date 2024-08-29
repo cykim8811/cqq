@@ -289,7 +289,7 @@ private:
         this->data->z();
     };
     void backward() {
-        this->data->z();
+        // this->data->z();
         // swap
         for (int i = 0; i < N; i++) {
             qgate::cx(this->children[0]->data->qbits[i], this->data->qbits[i]);
