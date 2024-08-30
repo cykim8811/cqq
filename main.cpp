@@ -25,29 +25,36 @@ qbool_t oracle4(const qbool_t &x) {
     return x | ~x;
 }
 
+
+qbool_t oracle_grover(const qbool_t &a, const qbool_t &b) {
+    return ~a & b;
+}
+
 int main() {
-    // cout << "Testing Deutsch's algorithm" << endl;
+    cout << "Testing Deutsch's algorithm" << endl;
 
-    // vector<function<qbool_t(const qbool_t&)>> oracles = {oracle1, oracle2, oracle3, oracle4};
+    vector<function<qbool_t(const qbool_t&)>> oracles = {oracle1, oracle2, oracle3, oracle4};
 
-    // for (auto oracle: oracles) {
-    //     qbool_t a = 0;
-    //     z(oracle(h(a)));
-    //     bool result = (int) a;
-    //     if (result) {
-    //         cout << "Oracle is balanced" << endl;
-    //     } else {
-    //         cout << "Oracle is constant" << endl;
-    //     }
-    // }
+    for (auto oracle: oracles) {
+        qbool_t a = 0;
+        z(oracle(h(a)));
+        bool result = (int) a;
+        if (result) {
+            cout << "Oracle is balanced" << endl;
+        } else {
+            cout << "Oracle is constant" << endl;
+        }
+    }
 
-    qbool_t a = 0;
-    qbool_t b = ~a;
-    qbool_t r = QByte<1>(make_shared<TBAnd<1>>(a.transform, b.transform));
-    a = 0;
-    b = 0;
-    r = 0;
-    cout << "l1" << endl;
+    cout << endl;
+
+    cout << "Testing Grover's algorithm" << endl;
+
+    qbool_t a = h<qbool_t>(0);
+    qbool_t b = h<qbool_t>(0);
+    z(oracle_grover(a, b));
+    z(~h(a) & ~h(b));
+    cout << (int) a << (int) b << endl;
     
     return 0;
 }
